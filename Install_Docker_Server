@@ -1,0 +1,104 @@
+------------------------------------------------------------------------------------------------------------------------------------
+# Install Linux Ubuntu Virtual Server
+------------------------------------------------------------------------------------------------------------------------------------
+1.	Download laatste iso file van Unbuntu : https://www.ubuntu.com/download/server/thank-you?country=NL&version=16.04.1&architecture=amd64
+2.	Maak een nieuwe virtual server met de volgende specs:
+		a. Naam : Standaard Docker Server
+		b. Type : Linux
+		c. Versie : Ubuntu (64-bit)
+		d. Geheugen 3072MB
+		e. Maak een nieuwe virtuele harde schijf aan (8,00 GB)
+		f. VDI (VirtualBox Disk Image)
+		g. Dynamisch gealloceerd
+		h. 16,00 GB
+3.	Kies instellingen van image, klik systeem, tab processor en klik hier 2 CPU
+4.	Koppel onder Opslag de gedownloade iso image als schijf
+5.	Klik bij netwerk op Adapter 1 en kies voor 'Netwerk bridge adapter' en kies bij Adapter 2 tab voor 'Host-only adapter'
+6.	Start het image normaal op
+7.	Installeer Ubuntu Server
+		a. English
+		b. Install Ubuntu Server
+		c. English
+		d. Other
+		e. Europe
+		f. Netherlands
+		g. United States
+		h. yes
+		i. us:intl
+		j. Primary network interface: enp0s3
+		k. Hostname: Docker01
+		l. Jeroen Dirks
+		m. jeroenskie
+		n. Welkom00
+		o. Welkom00
+		p. No
+		q. Yes
+		r. Guided - use entire disk
+		s. SCSI3
+		t. Yes
+		u. 16 GB
+		v. Yes
+		w. <empty>
+		x. Install security updates automatically
+		y. extra : * OpenSSH server
+		z. GRUB boot loader <Yes>
+		0. Continue
+8.	sudo -- sh -c 'apt-get update; apt-get upgrade -y; apt-get dist-upgrade -y; apt-get autoremove -y; apt-get install landscape-common -y'
+------------------------------------------------------------------------------------------------------------------------------------
+Docker installation (https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04)
+------------------------------------------------------------------------------------------------------------------------------------
+1.	sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+2.	sudo apt-add-repository 'deb https://apt.dockerproject.org/repo ubuntu-xenial main'
+3.	sudo apt-get update
+4.	apt-cache policy docker-engine
+5.	sudo apt-get install -y docker-engine
+6.	sudo systemctl status docker
+7.	sudo usermod -aG docker $(whoami)
+------------------------------------------------------------------------------------------------------------------------------------
+# Clone Image
+------------------------------------------------------------------------------------------------------------------------------------
+1.	Kies Kloon image 'Clone Docker Client Server (DCS00)'
+2.	sudo su
+3.	hostname <DCS0x>
+4.	vim /etc/network/interfaces
+	a.	verwijder de regel iface eth0 inet dhcp
+	b.	haal het hekje weg bij # iface eth0 inet static
+	c.	haal het hekje weg bij # address 192.168.178.10x en kijk welk ipadres vrijs is (normaliter het nummer van de hostname)
+5.	shutdown -r 0
+------------------------------------------------------------------------------------------------------------------------------------
+# Default Docker image (Ubuntu latest + tooling)
+------------------------------------------------------------------------------------------------------------------------------------
+1.	sudo docker build -t jeroenskie/docker-default github.com/Jeroenskie/docker.git
+2.	docker run -it jeroenskie/docker-default bash
+3.	CTRL + Q + P
+------------------------------------------------------------------------------------------------------------------------------------
+# Install RancherOS op de DRS01
+------------------------------------------------------------------------------------------------------------------------------------
+1.	sudo docker run -d --restart=unless-stopped -p 8080:8080 rancher/server
+2.	sudo docker logs -f 96fe57e15062 <CONTAINER_ID> a8cdb5188e1e
+------------------------------------------------------------------------------------------------------------------------------------
+# Install Docker-machine (optioneel te installeren op de Linux host)
+------------------------------------------------------------------------------------------------------------------------------------
+sudo wget -L https://github.com/docker/machine/releases/download/v0.8.2/docker-machine-`uname -s`-`uname -m`
+sudo mv /usr/local/bin/docker-machine-`uname -s`-`uname -m` /usr/local/bin/docker-machine
+sudo chmod +x /usr/local/bin/docker-machine
+
+docker-machine version
+------------------------------------------------------------------------------------------------------------------------------------
+# Install PostgreSQL + create Database
+------------------------------------------------------------------------------------------------------------------------------------
+1.	sudo apt-get update
+2.	sudo apt-get install -y postgresql postgresql-contrib
+3.	sudo -i -u postgres
+4.	psql
+5.	Confluence	: create role confluenceuser with login password 'Welkom00' valid until 'infinity';
+	Confluence	: create database confluence with encoding='utf-8' owner=confluenceuser connection limit=-1;
+	JIRA		: create role jiradbuser with login password 'Welkom00' valid until 'infinity';
+	JIRA		: create database jiradb with encoding='UNICODE' LC_COLLATE 'C' LC_CTYPE 'C' TEMPLATE template0 owner=jiradbuser;	
+7.	postgres=# \q
+8.	exit
+9.	sudo vim /etc/postgresql/9.5/main/postgresql.conf
+	a.	listen_addresses = 'locahost' vervanderen naar listen_addresses = '*'
+10.	sudo vim /etc/postgresql/9.5/main/pg_hba.conf
+	a.	toevoegen regel 'host	all	all	0.0.0.0/0	md5
+
