@@ -63,7 +63,7 @@ Docker installation (https://www.digitalocean.com/community/tutorials/how-to-ins
 4.	vim /etc/network/interfaces
 	a.	verwijder de regel iface eth0 inet dhcp
 	b.	haal het hekje weg bij # iface eth0 inet static
-	c.	haal het hekje weg bij # address 192.168.178.10x en kijk welk ipadres vrijs is (normaliter het nummer van de hostname)
+	c.	haal het hekje weg bij # address 192.168.178.10x en kijk welk ipadres vrij is (normaliter het nummer van de hostname)
 5.	shutdown -r 0
 ------------------------------------------------------------------------------------------------------------------------------------
 # Default Docker image (Ubuntu latest + tooling)
