@@ -100,5 +100,7 @@ docker-machine version
 9.	sudo vim /etc/postgresql/9.5/main/postgresql.conf
 	a.	listen_addresses = 'locahost' vervanderen naar listen_addresses = '*'
 10.	sudo vim /etc/postgresql/9.5/main/pg_hba.conf
-	a.	toevoegen regel 'host	all	all	0.0.0.0/0	md5
+	a.	toevoegen regel host	all	all	0.0.0.0/0	md5
+11.	Restart PostgreSQL server : sudo /etc/init.d/postgresql restart
+	
 
